@@ -1,0 +1,687 @@
+/%%/
+
+:: StoryTitle
+	❖ Prototype ❖
+:: StoryAuthor
+	Вячеслав Добранов
+
+:: StoryCaption
+	<<link "vars">><<checkvars>><</link>>
+	<<link "stats">><<ShowStats>><</link>>
+
+/%:: StoryIncludes
+
+../../../Platforms/CheT/Engine.twee
+../../../Platforms/CheT/Verbs.twee
+../../../Platforms/CheT/Scripts.twee
+DisplayTNB.tw%/
+
+/%:: StoryInitRuby [twee2]
+Twee2::build_config.story_ifid = '06d3fe11-edea-458d-85ff-70235a82d191'
+Twee2::build_config.story_format = 'SugarCube2'%/
+
+:: StorySettings
+ifid:06d3fe11-edea-458d-85ff-70235a82d191
+
+:: StoryInit
+	<script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+	<<script>>
+		//config.ui.stowBarInitially = true;
+		//config.debug = true;
+		config.cleanupWikifierOutput = true;
+	<</script>>
+	<<include "Initialise">>
+	/%<<set $_LOC = $OnWheatField>>%/
+	<<set $_LOC = $InTheCar>>
+	/%<<set $_TIME = "present">>%/
+	/%<<set $_PERSON = 3>>%/
+	<<Pronoun>>
+	/%<<set $Stage = "Stage1">>
+	<<set $Theme = "LightTheme">>%/
+	<<script>>
+		var date = new Date();
+		State.variables.InTheCarHourDelta = 23 - date.getHours();
+		State.variables.InTheCarMinuteDelta = 45 - date.getMinutes();
+	<</script>>
+
+/%:: PassageDone []
+	<<script>>
+		var date = new Date();
+		State.variables.InTheCarHours = (date.getHours() + State.variables.InTheCarHourDelta) % 24;
+		State.variables.InTheCarMinutes = date.getMinutes();
+	<</script>>%/
+
+:: Stage1 [nobr]
+
+:: Stage2 [nobr]
+
+:: Start
+	<<goto "ScreenBuild">>
+
+
+/%
+			коп			джип		телефон
+Ходы
+0			0			0			0
+5			·			·			·
+10			1			·			1
+15			·			·			·
+20			2			1			2
+25			·			·			·
+30			3			·			3
+35			·			·			·
+40			4			2			4
+
+
+
+коп:
+	0 - коп далеко
+	1 - 
+	2 - 
+	3 - 
+	4 - коп подходит к машине гг, стучит в стекло
+джип:
+	0 - джип далеко
+	1 - джип на полпути к гг
+	2 - джип напротив машины гг
+телефон:
+	0 - гг сбрасывает звонок
+	1 - гг сбрасывает звонок
+	2 - гг сбрасывает звонок
+	3 - гг сбрасывает звонок
+	4 - гг сбрасывает звонок
+
+%/
+
+
+:: player [obj]
+	<<set $player.Name = $_PRONOUN.Nom>>
+	<<set $player.NameG = $_PRONOUN.Gen>>
+	<<set $player.NameD = $_PRONOUN.Dat>>
+	<<set $player.NameA = $_PRONOUN.Acc>>
+	<<set $player.NameI = $_PRONOUN.Ins>>
+	<<set $player.NameP = $_PRONOUN.Pre>>
+	<<set $player.Parent = "InTheCar">>
+	<<set $player.isSightPenetrable = true>>
+	<<set $player.isSoundPenetrable = true>>
+	<<set $player.isSmellPenetrable = true>>
+	<<set $player.isTouchPenetrable = true>>
+	/%<<set $player.Look.Link = "Осмотри себя">>%/
+	<<set $player.Inventory.Link = "Что с собой?">>
+:: playerDesc [nobr]
+	Я повернул к себе зеркало заднего вида. Двухдневная щетина, покрасневшие глаза, синяки. Это давали о себе знать усталость, тревога, сигареты и кофеин. А ведь всё только начиналось. Я вздохнул и отвернул зеркало.
+	<<CurrentViewAdd $rearview>>
+
+:: axe [obj]
+	<<set $axe.Name = "топорик">>
+	<<set $axe.NameG = "топорика">>
+	<<set $axe.NameD = "топорику">>
+	<<set $axe.NameA = "топорик">>
+	<<set $axe.NameI = "топориком">>
+	<<set $axe.NameP = "топорике">>
+	<<set $axe.Parent = "NULL">>
+:: axeDesc [nobr]
+	Небольшой топорик с пластиковой рукояткой. Незаменимая вещь в путешествии по дикой местности. 
+:: axeLookAct [nobr]
+	<<set $axeLookAct = true>>
+:: axeLook [nobr]
+	Небольшой топорик с пластиковой рукояткой. Незаменимая вещь в путешествии по дикой местности.
+:: axeLookAfterAct [nobr]
+	<<set $axeLookAfterAct = true>>
+
+:: backpack [obj]
+	<<set $backpack.Name = "рюкзак">>
+	<<set $backpack.NameG = "рюкзака">>
+	<<set $backpack.NameD = "рюкзаку">>
+	<<set $backpack.NameA = "рюкзак">>
+	<<set $backpack.NameI = "рюкзаком">>
+	<<set $backpack.NameP = "рюкзаке">>
+	<<set $backpack.Parent = "NULL">>
+:: backpackDesc [nobr]
+	Походный армейский рюкзак. Внутри одноместная палатка, спальный мешок, кое-какие инструменты и припасы.
+
+:: phone [obj]
+	<<set $phone.Name = "телефон">>
+	<<set $phone.NameG = "телефона">>
+	<<set $phone.NameD = "телефону">>
+	<<set $phone.NameA = "телефон">>
+	<<set $phone.NameI = "телефоном">>
+	<<set $phone.NameP = "телефоне">>
+	<<set $phone.Parent = "player">>
+	<<set $phone.isNotable = [0,2,0,0]>>
+	/%<<set $phone.isTakeable = true>>%/
+	<<set $phone.Drop.Link = "Убрать телефон">>
+:: phoneDesc [nobr]
+	<<if !$phone.LookedAtScreen>>
+		Я отнял телефон от уха и посмотрел на экран. Заряд полный. Сигнал тоже. Во весь экран — индикация исходящего вызова и фотография жены.
+	<<else>>
+		Я опять посмотрел на экран. На улыбку жены. Только бы дозвониться.
+	<</if>>
+:: phoneLookAfterAct [nobr]
+	<<set $phone.LookedAtScreen = true>>
+:: phoneDropAct [nobr]
+:: phoneDrop [nobr]
+	Только после того, как свяжусь с женой, узнаю, что у них всё в порядке.
+:: phoneListen [nobr]
+	Тишина. Я ждал и ждал гудков, которые всё не появлялись.
+:: phoneDaemon [nobr]
+	<<if $InTheCar.Timer % 10 == 9>>
+		В этот момент из телефона опять донеслось: «Извините, в данный момент сеть перегружена…» Я сбросил вызов и в очередной раз набрал номер жены.
+	<</if>>
+	
+
+:: InTheCar [loc]
+	<<set $InTheCar.Name = "В машине">>
+	<<set $InTheCarHours = 0>>
+	<<set $InTheCarMinutes = 0>>
+	<<set $InTheCarHourDelta = 0>>
+	<<set $InTheCarMinuteDelta = 0>>
+	<<set $InTheCarTime = "23:45">>
+:: InTheCarEnter [nobr]
+	«Извините, в данный момент сеть перегружена. Попробуйте перезвонить позднее».<br>
+	Я в сотый раз сбросил вызов и вновь набрал <<obj "номер" $phone>> жены, глядя на расцвеченную огнями <<obj "пробку" $jam>> за метущимися <<obj "дворниками" $windshield>>.<br>
+	Прошло уже три часа с тех пор, как я съехал с кольцевой, но за то время проехал только половину пути до КПП на выезде из города.<br>
+	«Извините, в данный момент сеть перегружена…» Сбросил, снова набрал.<br>
+	<<CurrentViewAdd $downpour>>
+:: InTheCarDesc [nobr]
+	Я стоял в самой левой из шести полос, ближе всех к бетонному заграждению, и наблюдал за <<obj "полицейским" $cop>> в дождевике, который, мелькая фонариком, обходил машины в заторе. Подходил к каждой водительской двери, просил показать документы, светил в салон.<br>
+	С другой стороны ограждения медленно приближался военный <<obj "внедорожник" $jeep>>, сопровождавший <<obj "полицейского" $cop>>.<br>
+	Часы на <<obj "передней панели" $dashboard>> показывали без четверти полночь.
+:: InTheCarEvents [nobr]
+	<p><<include $phone.Daemon>></p>
+	<<if $cigarette.Parent == "player">>
+		<p><<include $cigarette.Daemon>></p>
+	<</if>>
+	<p><<include $radio.Daemon>></p>
+
+:: downpour [obj]
+	<<set $downpour.Name = "дождь">>
+	<<set $downpour.NameG = "дождя">>
+	<<set $downpour.NameD = "дождю">>
+	<<set $downpour.NameA = "дождь">>
+	<<set $downpour.NameI = "дождём">>
+	<<set $downpour.NameP = "дожде">>
+	<<set $downpour.Parent = "InTheCar">>
+	<<set $downpour.isNotable = [0,1,0,0]>>
+:: downpourDesc [nobr]
+
+:: windshield [obj]
+	<<set $windshield.Name = "лобовое стекло">>
+	<<set $windshield.NameG = "лобового стекла">>
+	<<set $windshield.NameD = "лобовому стеклу">>
+	<<set $windshield.NameA = "лобовое стекло">>
+	<<set $windshield.NameI = "лобовым стеклом">>
+	<<set $windshield.NameP = "лобовом стекле">>
+	<<set $windshield.Sex = "N">>
+	<<set $windshield.Parent = "InTheCar">>
+	/%<<set $windshield.isNotable = [1,0,0,0]>>%/
+	<<set $windshield.isOpen = false>>
+	<<set $windshield.isSightPenetrable = true>>
+	<<set $windshield.isSwitchable = true>>
+	<<set $windshield.isOn = true>>
+	<<set $windshield.SwitchOn.Link = "Включить дворники">>
+	<<set $windshield.SwitchOff.Link = "Выключить дворники">>
+:: windshieldDesc [nobr]
+	<<if $windshield.isOn>>
+		Дворники неистово метались из стороны в сторону и едва справлялись с проливным дождём, заливающим всё вокруг: <<obj "машины" $jam>> беженцев, <<obj "полицейского" $cop>> в дождевике, <<obj "внедорожник" $jeep>> на встречке.
+	<<else>>
+		По стеклу бежали потоки воды, размывая красные и жёлтые огни по ту сторону.
+	<</if>>
+:: windshieldSwitchOnAddAct [nobr]
+	<<set $windshield.isSightPenetrable = true>>
+:: windshieldSwitchOn [nobr]
+	Я включил дворники и они, разметав воду, открыли прежнюю картину: <<obj "машины" $jam>> беженцев, <<obj "полицейского" $cop>> в дождевике, <<obj "внедорожник" $jeep>> на встречке.
+:: windshieldSwitchOffAddAct [nobr]
+	<<set $windshield.isSightPenetrable = false>>
+:: windshieldSwitchOff [nobr]
+	Я выключил дворники и <<obj "дождь" $downpour>> тут же залил лобовое стекло, скрывая и смазывая мир за ним.
+
+:: jam [obj]
+	<<set $jam.Name = "пробка">>
+	<<set $jam.NameG = "пробки">>
+	<<set $jam.NameD = "пробке">>
+	<<set $jam.NameA = "пробку">>
+	<<set $jam.NameI = "пробкой">>
+	<<set $jam.NameP = "пробке">>
+	<<set $jam.Sex = "F">>
+	<<set $jam.Parent = "windshield">>
+:: jamDesc [nobr]
+
+:: cop [obj]
+	<<set $cop.Name = "полицейский">>
+	<<set $cop.NameG = "полицейского">>
+	<<set $cop.NameD = "полицейскому">>
+	<<set $cop.NameA = "полицейского">>
+	<<set $cop.NameI = "полицейским">>
+	<<set $cop.NameP = "полицейском">>
+	<<set $cop.Parent = "windshield">>
+	<<set $cop.isNotable = [1,0,0,0]>>
+:: copDesc [nobr]
+
+:: jeep [obj]
+	<<set $jeep.Name = "внедорожник">>
+	<<set $jeep.NameG = "внедорожника">>
+	<<set $jeep.NameD = "внедорожнику">>
+	<<set $jeep.NameA = "внедорожник">>
+	<<set $jeep.NameI = "внедорожником">>
+	<<set $jeep.NameP = "внедорожнике">>
+	<<set $jeep.Parent = "windshield">>
+:: jeepDesc [nobr]
+
+:: sideglass [obj]
+	<<set $sideglass.Name = "боковое окно">>
+	<<set $sideglass.NameG = "бокового окна">>
+	<<set $sideglass.NameD = "боковому окну">>
+	<<set $sideglass.NameA = "боковое окно">>
+	<<set $sideglass.NameI = "боковым окном">>
+	<<set $sideglass.NameP = "боковом окне">>
+	<<set $sideglass.Sex = "N">>
+	<<set $sideglass.Parent = "InTheCar">>
+	<<set $sideglass.isOpenable = true>>
+	<<set $sideglass.isOpen = false>>
+:: sideglassDesc [nobr]
+	<<if $sideglass.isOpen>>
+		Я посмотрел в приоткрытое окно водительской двери. В жёлтом свете дорожных фонарей ливень хлестал асфальт и бетонное заграждение, дальше, за пределами конусов света, была лишь непроглядная тьма. В боковом зеркале отражались фары другой машины.
+	<<else>>
+		По стеклу бежали ручейки воды, преломлявшие жёлтый свет фонарей и отражение в боковом зеркале. 
+	<</if>>
+:: sideglassOpenAddAct [nobr]
+	<<set $downpour.isNotable = [0,2,0,0]>>
+:: sideglassOpen [nobr]
+	Я нажал на кнопку на двери и стекло немедленно опустилось, впуская в салон зябкую сырость и шум дождя. Я оставил его наполовину закрытым, чтобы капли не летели в лицо.
+	<<CurrentViewAdd $downpour>>
+:: sideglassCloseAct [nobr]
+	<<if $cigarette.Parent != "player">>
+		<<CloseAct $sideglass>>
+		<<set $downpour.isNotable = [0,1,0,0]>>
+	<</if>>
+:: sideglassClose [nobr]
+	<<if $cigarette.Parent != "player">>
+		Я, нажав на кнопку, закрыл окно, отсекая шум и сырость дождя.
+		<<CurrentViewAdd $downpour>>
+	<<else>>
+		Я как раз курил и закрывать окно было бы неразумно — салон тут же наполнился бы удушливым сигаретным дымом.
+		<<CurrentViewAdd $cigarette>>
+	<</if>>
+
+
+:: rearview [obj]
+	<<set $rearview.Name = "зеркало заднего вида">>
+	<<set $rearview.NameG = "зеркала заднего вида">>
+	<<set $rearview.NameD = "зеркалу заднего вида">>
+	<<set $rearview.NameA = "зеркало заднего вида">>
+	<<set $rearview.NameI = "зеркалом заднего вида">>
+	<<set $rearview.NameP = "зеркале заднего вида">>
+	<<set $rearview.Sex = "N">>
+	<<set $rearview.Parent = "InTheCar">>
+:: rearviewDesc [nobr]
+	Я бросил взгляд на зеркало заднего вида, в котором отражались огни других машин. Бессчётное количество огней.
+	<<CurrentViewAdd $jam>>
+
+:: dashboard [obj]
+	<<set $dashboard.Name = "передняя панель">>
+	<<set $dashboard.NameG = "передней панели">>
+	<<set $dashboard.NameD = "передней панели">>
+	<<set $dashboard.NameA = "переднюю панель">>
+	<<set $dashboard.NameI = "передней панелью">>
+	<<set $dashboard.NameP = "передней панели">>
+	<<set $dashboard.Sex = "F">>
+	<<set $dashboard.Parent = "InTheCar">>
+	<<set $dashboard.isSightPenetrable = true>>
+	<<set $dashboard.isSoundPenetrable = true>>
+	<<set $dashboard.isSmellPenetrable = true>>
+	<<set $dashboard.isTouchPenetrable = true>>
+:: dashboardLookAddAct [nobr]
+	<<script>>
+		var date = new Date();
+		State.variables.InTheCarHours = date.getHours() + State.variables.InTheCarHourDelta;
+		State.variables.InTheCarMinutes = date.getMinutes() + State.variables.InTheCarMinuteDelta;
+		if (State.variables.InTheCarMinutes >= 60) {
+			State.variables.InTheCarHours++;
+		}
+		State.variables.InTheCarHours = State.variables.InTheCarHours % 24;
+		State.variables.InTheCarMinutes = State.variables.InTheCarMinutes % 60;
+	<</script>>
+	<<set $InTheCarTime = "<<= $InTheCarHours >= 10 ? $InTheCarHours : '0'+$InTheCarHours>>:<<= $InTheCarMinutes >= 10 ? $InTheCarMinutes : '0'+$InTheCarMinutes>>">>
+:: dashboardDesc [nobr]
+	<<if $dashboard.Examined == 1>>
+		Автомобиль был взят на прокат на время командировки. Неприметный серый седан с незнакомым шильдиком на <<obj "руле" $drwheel>>. Передняя панель была без излишеств: маленький 
+	<<else>>
+		Незнакомый шильдик на <<obj "руле" $drwheel>>, маленький 
+	<</if>>
+	<<obj "бардачок" $glovebox>>, несовременная <<obj "радиомагнитола" $radio>>, зелёные светящиеся часы.<br>
+	«$InTheCarTime»
+	
+:: drwheel [obj]
+	<<set $drwheel.Name = "руль">>
+	<<set $drwheel.NameG = "руля">>
+	<<set $drwheel.NameD = "рулю">>
+	<<set $drwheel.NameA = "руль">>
+	<<set $drwheel.NameI = "рулём">>
+	<<set $drwheel.NameP = "руле">>
+	<<set $drwheel.Parent = "dashboard">>
+:: drwheelDesc [nobr]
+
+:: radio [obj]
+	<<set $radio.Name = "радио">>
+	<<set $radio.NameG = "радио">>
+	<<set $radio.NameD = "радио">>
+	<<set $radio.NameA = "радио">>
+	<<set $radio.NameI = "радио">>
+	<<set $radio.NameP = "радио">>
+	<<set $radio.Sex = "N">>
+	<<set $radio.Parent = "dashboard">>
+	<<set $radio.isSwitchable = true>>
+	<<set $radio.isOn = false>>
+	<<set $radio.isTuneable = true>>
+	<<set $radio.Timer = 0>>
+	<<set $radio.Transmission = ["Повторяю. Данное сообщение является записью и будет воспроизводится на всех частотах автоматически до последующего уведомления", "Внимание. С 16 апреля этого года федеральным правительством был введён красный уровень эпидемиологической угрозы", "Во всех крупных городах установлены карантинные зоны. Всем гражданам, находящимся в пределах карантинных зон и не имеющих признаков заболевания, предписана эвакуация", "Направляйтесь на контрольно-пропускные пункты для досмотра и дальнейшего распределения", "Гражданам с признаками заболевания предписано оставаться дома. Вывесите белую ткань так, чтобы её было видно с улиц", "Регулярные патрули военно-медицинской службы обнаружат вас и перевезут в медучреждения, где вам будет оказана помощь. Не пытайтесь добраться самостоятельно", "Во всех карантинных зонах введён комендантский час с 20:00 до 08:00. Ко всем нарушителям режима будут применены меры согласно закона о чрезвычайном положении", "Не препятствуйте работе государственных и военнослужащих. Оказывайте содействие"]>>
+:: radioDesc [nobr]
+	<<if !$radio.isOn>>
+		Магнитола была выключена.
+	<<else>>
+		На экране магнитолы светилась частота незнакомой мне радиостанции.
+	<</if>>
+:: radioSwitchOnAddAct [nobr]
+	<<set $radio.isNotable = [0,2,0,1]>>
+	<<set $radio.justInteracted = true>>
+	<<set $radio.Timer = $InTheCar.Timer % 8>>
+:: radioSwitchOn [nobr]
+	Я включил радио и из динамиков раздался чёткий мужской голос:<br>
+	//«…<<= $radio.Transmission[$radio.Timer]>>».//
+:: radioSwitchOffAddAct [nobr]
+	<<set $radio.isNotable = [0,0,0,1]>>
+:: radioSwitchOff [nobr]
+	Я ткнул большую кнопку громкости, выключив радио. Снова стало слышно как шумит дождь<<= $windshield.isOn ? " и скрипят дворники" : "">>.
+:: radioListenAddAct [nobr]
+	<<set $radio.justInteracted = true>>
+	<<set $radio.Timer = $InTheCar.Timer % 8>>
+:: radioListen [nobr]
+	Я слушал передачу по радио:<br>
+	//«<<= $radio.Transmission[$radio.Timer]>>».//
+:: radioTuneAddAct [nobr]
+	<<set $radio.justInteracted = true>>
+	<<set $radio.Timer = $InTheCar.Timer % 8>>
+:: radioTune [nobr]
+	Я попробовал переключить радиостанцию, но на всех частотах передавалась одна и та же запись:<br>
+	//«<<= $radio.Transmission[$radio.Timer]>>».//
+:: radioDaemon [nobr]
+	<<set $radio.Timer = $InTheCar.Timer % 8>>
+	<<if $radio.isOn>>
+		<<if $radio.justInteracted>>
+			<<set $radio.justInteracted = false>>
+		<<else>>
+			Из динамиков шла радиопередача: //«<<= $radio.Transmission[$radio.Timer]>>».//
+		<</if>>
+	<</if>>
+
+/%
+Повторяю. Данное сообщение является записью и будет воспроизводится на всех частотах автоматически до последующего уведомления.
+Внимание. С 16 апреля этого года федеральным правительством был введён красный уровень эпидемиологической угрозы.
+Во всех крупных городах установлены карантинные зоны. Всем гражданам, находящимся в пределах карантинных зон и не имеющих признаков заболевания, предписана эвакуация.
+Направляйтесь на контрольно-пропускные пункты для досмотра и дальнейшего распределения.
+Гражданам с признаками заболевания предписано оставаться дома. Вывесите белую ткань так, чтобы её было видно с улиц.
+Регулярные патрули военно-медицинской службы обнаружат вас и перевезут в медучреждения, где вам будет оказана помощь. Не пытайтесь добраться самостоятельно.
+Во всех карантинных зонах введён комендантский час с 20:00 до 08:00. Ко всем нарушителям режима будут применены меры согласно положения о чрезвычайных ситуациях.
+Не препятствуйте работе государственных и военнослужащих. Оказывайте содействие.
+%/
+
+:: glovebox [obj]
+	<<set $glovebox.Name = "бардачок">>
+	<<set $glovebox.NameG = "бардачка">>
+	<<set $glovebox.NameD = "бардачку">>
+	<<set $glovebox.NameA = "бардачок">>
+	<<set $glovebox.NameI = "бардачком">>
+	<<set $glovebox.NameP = "бардачке">>
+	<<set $glovebox.Parent = "dashboard">>
+	<<set $glovebox.isOpenable = true>>
+	<<set $glovebox.isOpen = false>>
+:: gloveboxDesc [nobr]
+	<<if $glovebox.isOpen>>
+		Крошечная лампочка освещала содержимое бардачка: 
+		<<if $documents.Parent == "glovebox">>
+			<<obj "документы" $documents>>, 
+		<</if>>
+		<<obj "пачку сигарет" $smokes>> и рекламный <<obj "буклет" $advert>>.
+	<<else>>
+		Незаметный прямоугольник в дешёвом пластике <<obj "приборной панели" $dashboard>>.
+	<</if>>
+
+:: advert [obj]
+	<<set $advert.Name = "буклет">>
+	<<set $advert.NameG = "буклета">>
+	<<set $advert.NameD = "буклету">>
+	<<set $advert.NameA = "буклет">>
+	<<set $advert.NameI = "буклетом">>
+	<<set $advert.NameP = "буклете">>
+	<<set $advert.Sex = "M">>
+	<<set $advert.Parent = "glovebox">>
+	<<set $advert.isTakeable = true>>
+:: advertDesc [nobr]
+	Мятый рекламный буклет компании по прокату автомобилей.
+:: advertTakeAct [nobr]
+:: advertTake [nobr]
+	Совершенно бесполезная для меня вещь.
+
+:: documents [obj]
+	<<set $documents.Name = "документы">>
+	<<set $documents.NameG = "документов">>
+	<<set $documents.NameD = "документам">>
+	<<set $documents.NameA = "документы">>
+	<<set $documents.NameI = "документами">>
+	<<set $documents.NameP = "документах">>
+	<<set $documents.Sex = "P">>
+	<<set $documents.Parent = "glovebox">>
+	<<set $documents.isTakeable = true>>
+	<<set $documents.Drop.Link = "Убрать документы">>
+:: documentsDesc [nobr]
+	Пластиковая папка с моими правами, страховкой, договором найма автомобиля и прочей макулатурой.
+:: documentsDropAct [nobr]
+	<<moveobj $documents $glovebox>>
+:: documentsDrop [nobr]
+	Я убрал документы назад в бардачок.
+
+:: smokes [obj]
+	<<set $smokes.Name = "пачка сигарет">>
+	<<set $smokes.NameG = "пачки сигарет">>
+	<<set $smokes.NameD = "пачке сигарет">>
+	<<set $smokes.NameA = "пачку сигарет">>
+	<<set $smokes.NameI = "пачкой сигарет">>
+	<<set $smokes.NameP = "пачке сигарет">>
+	<<set $smokes.Sex = "F">>
+	<<set $smokes.Parent = "glovebox">>
+	<<set $smokes.isTakeable = true>>
+	<<set $smokes.Take.Link = "Взять сигарету">>
+:: smokesDesc [nobr]
+	Полупустая пачка «Shuangxi Light».
+:: smokesTakeAct [nobr]
+	<<if $cigarette.Parent != "player">>
+		<<TakeAct $cigarette>>
+		<<if !$sideglass.isOpen>>
+			<<OpenAct $sideglass>>
+		<</if>>
+		<<set $cigarette.Timer = $InTheCar.Timer>>
+	<</if>>
+:: smokesTake [nobr]
+	<<if $cigarette.justTook>>
+		Я вытряхнул из красной пачки сигарету, сунул в зубы, зажёг от прикуривателя. 
+		<<if $sideglass.justOpened>>
+			Открыл наполовину окно водительской двери и, глубоко вдохнув, выпустил дым в сырую ночь.
+		<<else>>
+			И, глубоко вдохнув, выпустил дым в открытое боковое окно.
+		<</if>>
+		<<CurrentViewAdd $cigarette>>
+		<<CurrentViewAdd $sideglass>>
+	<<else>>
+		В тот момент я уже курил.
+	<</if>>
+:: smokesTakeAfterAct [nobr]
+	<<TakeAfterAct $cigarette>>
+	<<OpenAfterAct $sideglass>>
+
+:: cigarette [obj]
+	<<set $cigarette.Name = "сигарета">>
+	<<set $cigarette.NameG = "сигареты">>
+	<<set $cigarette.NameD = "сигарете">>
+	<<set $cigarette.NameA = "сигарету">>
+	<<set $cigarette.NameI = "сигаретой">>
+	<<set $cigarette.NameP = "сигарете">>
+	<<set $cigarette.Sex = "F">>
+	<<set $cigarette.Parent = "NULL">>
+	<<set $cigarette.Timer = 0>>
+:: cigaretteDesc [nobr]
+	<<switch $cigarette.State>>
+		<<case 0 1 2 3 4>>
+			Тлеющая сигарета «Shuangxi Light».
+		<<case 5 6 7 8>>
+			Наполовину выкуренная сигарета «Shuangxi Light».
+		<<case 9>>
+			Окурок «Shuangxi Light».
+	<</switch>>
+:: cigaretteDropAct [nobr]
+	<<removeobj $cigarette>>
+	<<set $sideglass.isOpen = false>>
+	<<set $cigarette.Timer = 0>>
+:: cigaretteDrop [nobr]
+	Я щелчком выбросил <<= ($cigarette.State < 8 ? "сигарету" : "окурок")>> в дождь и закрыл окно.
+	<<CurrentViewAdd $sideglass>>
+:: cigaretteDaemon [nobr]
+	<<set $cigarette.State = $InTheCar.Timer - $cigarette.Timer>>
+	<<CurrentViewAdd $cigarette>>
+	<<switch $cigarette.State>>
+		<<case 5>>
+			Я затянулся от сигареты.
+		<<case 10>>
+			<<removeobj $cigarette>>
+			<<set $sideglass.isOpen = false>>
+			<<set $cigarette.Timer = 0>>
+			Я щелчком выбросил окурок в дождь и закрыл окно.
+			<<CurrentViewAdd $sideglass>>
+	<</switch>>
+
+
+
+:: OnWheatField[loc]
+	<<set $OnWheatField.Name = "На пшеничном поле">>
+:: OnWheatFieldEvents [nobr]
+:: OnWheatFieldEnter [nobr]
+	Он опускается среди пыльных колосьев на одно колено и, затянув ослабленный шнурок на ботинке, поднимается. Перехватывает <<obj "топорик" $axe>>, ещё раз оглядывается.
+:: OnWheatFieldDesc [nobr]
+	Пологий склон поднимается с севера на юг — от чёрной ленты <<obj "шоссе" $highway>> далеко внизу к двухэтажному <<obj "дому" $house>> на вершине. Закатное <<obj "солнце" $sun>> длинными тенями расчёсывает сухие пшеничные <<obj "стебли" $wheat>>. Чистое <<obj "небо" $sky>> наполняется вечерней синевой, но далеко на севере клубятся грозовые тучи. Ночью придёт дождь.
+:: OnWheatFieldActs [nobr]
+
+
+:: highway [obj]
+	<<set $highway.Name = "шоссе">>
+	<<set $highway.NameG = "шоссе">>
+	<<set $highway.NameD = "шоссе">>
+	<<set $highway.NameA = "шоссе">>
+	<<set $highway.NameI = "шоссе">>
+	<<set $highway.NameP = "шоссе">>
+	<<set $highway.Sex = "N">>
+	<<set $highway.Parent = "OnWheatField">>
+	<<set $highway.isNear = 0>>
+:: highwayDesc [nobr]
+	Шоссе тянется вдоль северной границы поля, огороженное от него проволочной оградой. Оно убегает по подножию склона дальше, к темнеющему на западе частоколу <<obj "леса" $forest>>.
+
+:: forest [obj]
+	<<set $forest.Name = "лес">>
+	<<set $forest.NameG = "леса">>
+	<<set $forest.NameD = "лесу">>
+	<<set $forest.NameA = "лес">>
+	<<set $forest.NameI = "лесом">>
+	<<set $forest.NameP = "лесе">>
+	<<set $forest.Sex = "M">>
+	<<set $forest.Parent = "OnWheatField">>
+	<<set $forest.isNear = 0>>
+:: forestDesc [nobr]
+	Тёмный частокол леса, рассечённый в том месте, где в него вонзается <<obj "шоссе" $highway>>.
+	
+:: house [obj]
+	<<set $house.Name = "дом">>
+	<<set $house.NameG = "дома">>
+	<<set $house.NameD = "дому">>
+	<<set $house.NameA = "дом">>
+	<<set $house.NameI = "домом">>
+	<<set $house.NameP = "доме">>
+	<<set $house.Sex = "M">>
+	<<set $house.Parent = "OnWheatField">>
+	<<set $house.isNotable = [1,0,0,0]>>
+	<<set $house.isNear = 0>>
+:: houseDesc [nobr]
+	Белый двухэтажный дом. Двускатная крыша, широкая веранда на весь фасад, заколоченные досками окна.<br>
+	<<= ($house.Examined > 1 ? "" : "Шанс раздобыть еду, укрыться от надвигающейся непогоды, но главное — возможность впервые за очень долгое время поспать в кровати.")>>
+
+:: test [obj]
+	<<set $test.Name = "!TEST!">>
+	<<set $test.Parent = "house">>
+	<<set $test.isNotable = [10,0,0,0]>>
+
+:: sun [obj]
+	<<set $sun.Name = "солнце">>
+	<<set $sun.NameG = "солнца">>
+	<<set $sun.NameD = "солнцу">>
+	<<set $sun.NameA = "солнце">>
+	<<set $sun.NameI = "солнцем">>
+	<<set $sun.NameP = "солнце">>
+	<<set $sun.Sex = "N">>
+	<<set $sun.Parent = "OnWheatField">>
+	<<set $sun.isNear = 0>>
+
+:: wheat [obj]
+	<<set $wheat.Name = "стебли">>
+	<<set $wheat.NameG = "стеблей">>
+	<<set $wheat.NameD = "стеблям">>
+	<<set $wheat.NameA = "стебли">>
+	<<set $wheat.NameI = "стеблями">>
+	<<set $wheat.NameP = "стеблях">>
+	<<set $wheat.Sex = "P">>
+	<<set $wheat.Parent = "OnWheatField">>
+:: wheatDesc [nobr]
+	Посевы мертвы. Их сухие пыльные стебли безжизненно качаются на ветру, а те колосья, что смогли вызреть без ухода, давно уже осыпались или обломились.
+:: wheatTakeAct [nobr]
+:: wheatTake [nobr]
+	<<if !$wheat.triedToTake>>
+		Он пробует надломить стебель, который выглядит лучше остальных, но тот сразу же осыпается пылью и чёрными зёрнами.
+	<<else>>
+		Они мертвы.
+	<</if>>
+:: wheatTakeAfterAct [nobr]
+	<<set $wheat.triedToTake = true>>
+	<<set $wheat.isNotable[3] = 0>>
+
+
+:: sky [obj]
+	<<set $sky.Name = "небо">>
+	<<set $sky.NameG = "неба">>
+	<<set $sky.NameD = "небу">>
+	<<set $sky.NameA = "небо">>
+	<<set $sky.NameI = "небом">>
+	<<set $sky.NameP = "небе">>
+	<<set $sky.Sex = "N">>
+	<<set $sky.Parent = "OnWheatField">>
+	<<set $sky.isNear = 0>>
+:: skyDesc [nobr]
+	Небо теряет свою дневную прозрачность, наполняясь предвечерней синевой. Над северным горизонтом темнеет полоса атмосферного фронта. Она, кажется, стала ближе.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+:: ENDOFMAINFILE

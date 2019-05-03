@@ -1,0 +1,960 @@
+/%
+	
+	               ,,                     ,,
+	`7MM"""Yb.     db                   `7MM
+	  MM    `Yb.                          MM
+	  MM     `Mb `7MM  ,pP"Ybd `7MMpdMAo. MM   ,6"Yb.`7M'   `MF'
+	  MM      MM   MM  8I   `"   MM   `Wb MM  8)   MM  VA   ,V
+	  MM     ,MP   MM  `YMMMa.   MM    M8 MM   ,pm9MM   VA ,V
+	  MM    ,dP'   MM  L.   I8   MM   ,AP MM  8M   MM    VVV
+	.JMMmmmdP'   .JMML.M9mmmP'   MMbmmd'.JMML.`Moo9^Yo.  ,V
+	                             MM                     ,V
+	                           .JMML.                OOb"
+%/
+
+/%
+	 ##                                 ###          #    ##       #
+	#  #                                #  #               #       #
+	 #     ##   ###    ##    ##   ###   ###   #  #  ##     #     ###
+	  #   #     #  #  # ##  # ##  #  #  #  #  #  #   #     #    #  #
+	#  #  #     #     ##    ##    #  #  #  #  #  #   #     #    #  #
+	 ##    ##   #      ##    ##   #  #  ###    ###  ###   ###    ###
+	
+%/
+:: ScreenBuild [nobr]
+	<<unset $focus>><<= "<<set $"+$_LOC.ID+".Visited++>>">><div class="location_name">''<<ExamLoc>>''</div><p style="height: 2.5em;margin: 0;"></p>
+	<p class="location_enter" style="font-style:italic;"><<include $_LOC.Enter>></p>
+	<p class="location_description"><<include $_LOC.Desc>></p>
+	<p class="location_content"><<LocationContent>></p>
+	<p class="report"><<include $_LOC.Events>></p> /% Параграф для отображения лога %/
+	/%<p class="focus"></p>%/
+/% TNB %/
+	/% Добавление в _VIEWCURRENT объектов инвентаря %/
+	<<for _k0 to 0; _k0 < $player.Children.length; _k0++>>
+		<<= "<<set _child0 = $"+$player.Children[_k0]+">>">>
+		<<set $_VIEWCURRENT.push(_child0)>>
+		<<if _child0.Children.length > 0>>
+			<<for _k1 to 0; _k1 < _child0.Children.length; _k1++>>
+				<<= "<<set _child1 = $"+_child0.Children[_k1]+">>">>
+				<<set $_VIEWCURRENT.push(_child1)>>
+				<<if _child1.Children.length > 0>>
+					<<for _k2 to 0; _k2 < _child1.Children.length; _k2++>>
+							<<= "<<set _child2 = $"+_child1.Children[_k2]+">>">>
+							<<set $_VIEWCURRENT.push(_child2)>>
+					<</for>>
+				<</if>>
+			<</for>>
+		<</if>>
+	<</for>>
+	/% Добавление в _VIEWCURRENT протагониста %/
+	<<set $_VIEWCURRENT.push($player)>>
+	/% Слив _VIEWCURRENT в историю %/
+	<<ViewHistoryUpdate>>
+	/% Обновление коэффициентов важности всех объектов %/
+	<<UpdateCoeffs>>
+	/% Обновление таймеров %/
+	<<UpdateTimers>>
+	/% Контейнер с кнопками %/
+	<div class="buttons_container">
+		<<UpdateButtons>>
+	</div>
+	/%<<append "#story">>
+		<div class="stats" style="background: #222;">
+			<div class="verb-stats">
+			</div>
+		</div>
+	<</append>>%/
+/% TNB %/
+	<p class="object_actions" style="text-align:center;margin-bottom: 0px;"></p>
+	<p class="location_actions" style="text-align:center;margin: 0;">/%<<include $_LOC.Acts>>%/</p>
+	/%<p class="inventory" style="line-height:1;"><<include "Inventory">></p>%/
+	<<if $Theme == "LightTheme">>
+		<<LightTheme>>
+	<<else>>
+		<<DarkTheme>>
+	<</if>>
+	/%<p class="link obj prop actloc actobj Cutscene"></p> /% фиктивный элемент для отлова ошибок %/
+
+
+/%
+	###                            #
+	 #                             #
+	 #    ###   # #    ##   ###   ###    ##   ###   #  #
+	 #    #  #  # #   # ##  #  #   #    #  #  #  #  #  #
+	 #    #  #  # #   ##    #  #   #    #  #  #      # #
+	###   #  #   #     ##   #  #    ##   ##   #       #
+	                                                 #
+%/
+:: Inventory1 [nobr]
+	<<set _div0 = 0>>
+	<<set _div1 = 0>>
+	<<set _div2 = 0>>
+	<<for _k0 to 0; _k0 < $player.Children.length; _k0++>>
+		<<= "<<set _child0 = $"+$player.Children[_k0]+">>">>
+		<<if !_div0>> /% если выводится первый/единственный предмет, отделить инвентарь чертой, вывести заголовок %/
+			<<set _div0 = 1>>
+			<hr>
+			С собой: 
+		<<else>> /% если в инвентаре уже есть предмет — отделить его и последующие предметы чертой %/
+			|
+		<</if>>
+		_child0.Name
+		/%<<obj _child0.Name _child0>>%/
+		<<if _child0.Children.length > 0>> /% если у предмета есть свои «дети», вывести их подобным же образом в скобках %/
+			(
+			<<for _k1 to 0; _k1 < _child0.Children.length; _k1++>>
+				<<= "<<set _child1 = $"+_child0.Children[_k1]+">>">>
+				<<if !_div1>>
+					<<set _div1 = 1>>
+				<<else>>
+					,
+				<</if>>
+				_child1.Name
+				/%<<obj _child1.Name _child1>>%/
+				<<if _child1.Children.length > 0>>
+					(
+					<<for _k2 to 0; _k2 < _child1.Children.length; _k2++>>
+							<<= "<<set _child2 = $"+_child1.Children[_k2]+">>">>
+							<<if !_div2>>
+								<<set _div2 = 1>>
+							<<else>>
+								,
+							<</if>>
+							_child2.Name
+							/%<<obj _child2.Name _child2>>%/
+					<</for>>
+					)
+				<</if>>
+			<</for>>
+			)
+		<</if>>
+	<</for>>
+
+
+
+
+
+
+
+
+
+:: DisplayWidgets [widget nobr]
+
+/%
+	
+	              ,,
+	`7MMF'        db              `7MM
+	  MM                            MM
+	  MM        `7MM  `7MMpMMMb.    MM  ,MP',pP"Ybd
+	  MM          MM    MM    MM    MM ;Y   8I   `"
+	  MM      ,   MM    MM    MM    MM;Mm   `YMMMa.
+	  MM     ,M   MM    MM    MM    MM `Mb. L.   I8
+	.JMMmmmmMMM .JMML..JMML  JMML..JMML. YA.M9mmmP'
+	
+	
+%/
+
+/%
+	      #       #                #
+	      #                        #
+	 ##   ###     #    ##    ##   ###
+	#  #  #  #    #   # ##  #      #
+	#  #  #  #    #   ##    #      #
+	 ##   ###   # #    ##    ##     ##
+	             #
+%/
+/% виджет осмотра объекта %/
+/%
+	$args[0] = текст ссылки
+	$args[1] = объект
+	$args[2] = дополнительные классы для ссылки
+%/
+
+<<widget "obj">>
+	/% обрачиваем ссылку в span и задаём ему классы "link", "obj", "[родитель-объект]", плюс, если объект отключён, добавляем класс "disabled" для тушения ссылки %/
+	<<set _linkClass = $args[1].Parent+"-"+$args[1].ID+($args[1].Disabled ? " disabled" : "")+($args[2] ? $args[2] : "")>>
+	<<CurrentViewAdd $args[1]>>
+	/%<<ViewHistoryUpdate $args[1]>>%/
+
+	<span @class='"link obj "+_linkClass'>
+		<<object $args[0] $args[1]>></span><</widget>>
+
+<<widget "object">><<link $args[0]>>
+		<<set $focus = $args[1]>> /% обновляем фокус %/
+		<<if $focus.Trigger && $_MODE == "NULL">>
+			<<set $_MODE = $focus.Trigger>>
+			<<set $args[1].Trigger = "NULL">>
+		<</if>>
+		<<if $_MODE == "NULL">>
+			<<append ".report">> /% выводим данные объекта в фокусе %/
+				<p class="animated fadeInDown">	
+					<<UCase $focus.Name "$focusName">>
+					<<if Story.get($focus.Parent).tags.contains("obj") and $focus.Parent != "player">> /% если «родитель» объекта тоже объект и не игрок, выводим и его в командную строку %/
+						<<= "<<set $focusParent = $"+$focus.Parent+">>">>
+						<<UCase $focusParent.Name "$focusParentName">>
+						• 
+						<<if !$focusParent.Disabled>> /% если «родитель» объекта не отключён — выводим его имя ссылкой %/
+							<<obj $focusParentName $focusParent>>
+						<<else>>
+							<<= $focusParentName>>
+						<</if>>
+						 : 
+					<<else>>
+						• 
+					<</if>>
+					<<if !$focus.Disabled>>
+						<<obj $focusName $focus>>
+					<<else>>
+						<<= $focusName>> /% выводим имя объекта %/
+					<</if>>
+					<br>
+					<<include $focus.Desc>> /% выводим описание объекта %/
+					<<set $focus.Examined++>>
+				</p>
+			<</append>>
+			<<if $_EXAMISACT>> /% если осмотр — полноценный ход, показываем события в локации %/
+				<<append ".report">>
+					<<if tale.get($_LOC.Events).processText().length gt 0 && $args[1]>>
+						<p class="animated fadeInDown">	
+							<<include $_LOC.Events>>
+						</p>
+					<</if>>
+				<</append>>
+			<</if>>
+			<<script>>
+				$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+			<</script>>
+			<<replace ".object_actions">>
+				<<if Story.has($focus.Acts)>>
+					<p class="animated fadeInDown">	
+						<<include $focus.Acts>> /% выводим действия объекта %/
+					</p>
+				<</if>>
+			<</replace>>
+			<<replace ".location_actions">>
+				<<if Story.has($_LOC.Acts)>>
+					<p class="animated fadeInDown">	
+						<<include $_LOC.Acts>> /% выводим действия локации%/
+					</p>
+				<</if>>
+			<</replace>>
+			<<replace ".inventory">>
+				<<include "Inventory">>
+			<</replace>>
+			<<if $_EXAMISACT && $_MODE == "CUTSCENE">> /% если осмотр — полноценный ход и в нём включается катсцена, то трём все действия и инвентарь %/
+				/%<<replace ".object_actions">>
+				<</replace>>
+				<<replace ".location_actions">>
+				<</replace>>%/
+				<<replace ".inventory">>
+				<</replace>>
+				<<addclass ".link.obj, .link.prop, .link.actloc, .link.actobj" "faded">> /% гасим все ссылки для катсцены %/
+				<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+			<</if>>
+		<<elseif $_MODE == "CUTSCENE">>
+			<<append ".report">> /% выводим данные объекта в фокусе %/
+				<p class="animated fadeInDown">	
+					<<UCase $focus.Name "$focusName">>
+					<<if Story.get($focus.Parent).tags.contains("obj") and $focus.Parent != "player">> /% если «родитель» объекта тоже объект и не игрок, выводим и его в командную строку %/
+						<<= "<<set $focusParent = $"+$focus.Parent+">>">>
+						<<UCase $focusParent.Name "$focusParentName">>
+						• 
+						<<if !$focusParent.Disabled>> /% если «родитель» объекта не отключён — выводим его имя ссылкой %/
+							<<obj $focusParentName $focusParent " faded">>
+						<<else>>
+							<<= $focusParentName>>
+						<</if>>
+						 : 
+					<<else>>
+						• 
+					<</if>>
+					<<if !$focus.Disabled>>
+						<<obj $focusName $focus " faded">>
+					<<else>>
+						<<= $focusName>> /% выводим имя объекта %/
+					<</if>>
+					<br>
+					<<include $focus.Desc>> /% выводим описание объекта %/
+					<<set $focus.Examined++>>
+				</p>
+			<</append>>
+			<<script>>
+				$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+			<</script>>
+			<<replace ".object_actions">>
+				<<if Story.has($focus.Acts)>>
+					<p class="animated fadeInDown">	
+						<<include $focus.Acts>> /% выводим действия объекта %/
+					</p>
+				<</if>>
+			<</replace>>
+			<<replace ".location_actions">>
+			<</replace>>
+			<<replace ".inventory">>
+			<</replace>>
+			<<addclass ".link.prop, .link.actloc, .link.obj" "faded">> /% гасим все ссылки для катсцены %/
+		<<elseif $_MODE == "pistol_shooting">>
+			<<ShootResult $pistol $focus>>
+		<<elseif $_MODE == "axe_hacking">>
+			<<HackResult $axe $focus>>
+		<<elseif $_MODE == "extinguishing">>
+			<<ExtinguishResult $fireExt $focus>>
+		<<elseif $_MODE == "inserting">>
+			<<InsertResult $fireExt2 $focus>>
+		<</if>>
+	<</link>><</widget>>
+
+/%
+	
+	
+	###   ###    ##   ###
+	#  #  #  #  #  #  #  #
+	#  #  #     #  #  #  #
+	###   #      ##   ###
+	#                 #
+%/
+/%
+	$args[0] = текст ссылки
+	$args[1] = объект декорации
+%/
+/% виджет осмотра декораций %/
+<<widget "prop">><<="<span class='link prop "+$args[1].ID+($args[1].Disabled ? " disabled" : "")+"'><<prp '"+$args[0]+"' $"+$args[1].ID+">></span>">><</widget>> /% обрачиваем ссылку в span и задаём ему классы "link", "prop", "[локация]", плюс, если декорация отключена, добавляем класс "disabled" для тушения ссылки %/
+
+<<widget "prp">><<link $args[0]>>
+		<<set $focus = $args[1]>>
+		<<append ".report">>
+			<p class="animated fadeInDown">	
+				<<UCase $focus.Name "$focusName">>
+				• <<= $focusName>>
+				<br>
+				<<include $focus.Desc>> /% выводим описание декорации %/
+				<<set $focus.Examined++>>
+			</p>
+		<</append>>
+		<<if $_EXAMISACT>>
+			<<append ".report">>
+				<<if tale.get($_LOC.Events).processText().length gt 0 && $args[1]>>
+					<p class="animated fadeInDown">	
+						<<include $_LOC.Events>>
+					</p>
+				<</if>>
+			<</append>>
+		<</if>>
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+		<</script>>
+		<<replace ".object_actions">><</replace>>
+		<<replace ".location_actions">>
+			<<if Story.has($_LOC.Acts)>>
+				<p class="animated fadeInDown">	
+					<<include $_LOC.Acts>> /% выводим действия локации%/
+				</p>
+			<</if>>
+		<</replace>>
+		<<replace ".inventory">>
+			<<include "Inventory">>
+		<</replace>>
+		<<if $_EXAMISACT && $_MODE == "CUTSCENE">> /% если осмотр — полноценный ход и в нём включается катсцена, то трём все действия и инвентарь %/
+			<<replace ".inventory">>
+			<</replace>>
+			<<addclass ".link.obj, .link.prop, .link.actloc, .link.actobj" "faded">> /% гасим все ссылки для катсцены %/
+			<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+		<</if>>
+	<</link>><</widget>>
+
+
+
+
+
+
+
+
+
+
+
+
+/%
+	
+	               ,,                     ,,                                   ,,                                       ,,
+	`7MM"""Yb.     db                   `7MM                                 `7MM   mm                           mm     db
+	  MM    `Yb.                          MM                                   MM   MM                           MM
+	  MM     `Mb `7MM  ,pP"Ybd `7MMpdMAo. MM   ,6"Yb.`7M'   `MF'     ,6"Yb.    MM mmMMmm .gP"Ya `7Mb,od8 ,6"Yb.mmMMmm `7MM  ,pW"Wq.`7MMpMMMb.  ,pP"Ybd
+	  MM      MM   MM  8I   `"   MM   `Wb MM  8)   MM  VA   ,V      8)   MM    MM   MM  ,M'   Yb  MM' "'8)   MM  MM     MM 6W'   `Wb MM    MM  8I   `"
+	  MM     ,MP   MM  `YMMMa.   MM    M8 MM   ,pm9MM   VA ,V        ,pm9MM    MM   MM  8M""""""  MM     ,pm9MM  MM     MM 8M     M8 MM    MM  `YMMMa.
+	  MM    ,dP'   MM  L.   I8   MM   ,AP MM  8M   MM    VVV        8M   MM    MM   MM  YM.    ,  MM    8M   MM  MM     MM YA.   ,A9 MM    MM  L.   I8
+	.JMMmmmdP'   .JMML.M9mmmP'   MMbmmd'.JMML.`Moo9^Yo.  ,V         `Moo9^Yo..JMML. `Mbmo`Mbmmd'.JMML.  `Moo9^Yo.`Mbmo.JMML.`Ybmd9'.JMML  JMML.M9mmmP'
+	                             MM                     ,V
+	                           .JMML.                OOb"
+%/
+
+/%
+	   db     dP""b8 888888 88""Yb 888888 888888 88""Yb 888888 .dP"Y8 88  88
+	  dPYb   dP   `"   88   88__dP 88__   88__   88__dP 88__   `Ybo." 88  88
+	 dP__Yb  Yb        88   88"Yb  88""   88""   88"Yb  88""   o.`Y8b 888888
+	dP""""Yb  YboodP   88   88  Yb 888888 88     88  Yb 888888 8bodP' 88  88
+%/
+/% виджет обновления экрана по действию %/
+/%
+	$args[0] = объект в фокусе
+	$args[1] = имя действия
+	$args[2] = описание действия
+	(опционально) $args[3] = действие для создания повторной ссылки
+%/
+<<widget "ActRefresh">>
+	<<if $_MODE == "NULL">>
+		<<set $focus = $args[0]>> /% обновляем фокус %/
+		/%<<replace ".focus">><</replace>>%/
+		<<append ".report">>
+			/%<<if $args[1] || $args[3]>>%/
+				<p class="animated fadeInDown">	
+					<<if $_ACTLOG>> /% проверка, включено ли отражение навзания действия в логе (см. Engine—Initialise) %/
+						<<if $args[3] && !$focus.Disabled>>
+							//> $args[3]// /% выводим ссылку для повторения действия %/
+						<<else>>
+							//> $args[1]// /% выводим имя действия %/
+						<</if>>
+						<br>
+					<<else>>
+						/%<<set $_ACTLOG = true>>%/
+					<</if>>
+					$args[2] /% выводим описание действия %/
+				</p>
+			/%<</if>>%/
+		<</append>>
+		<<append ".report">>
+			<<if tale.get($_LOC.Events).processText().length gt 0 && $args[1]>>
+				<p class="animated fadeInDown" style="margin: 0;">	
+					<<include $_LOC.Events>>
+				</p>
+			<</if>>
+		<</append>>
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+		<</script>>
+/% TNB %/
+		<<ViewHistoryUpdate>>
+		<<UpdateCoeffs>>
+		<<UpdateTimers>>
+		/%<<ShowStats>>%/
+		<<replace ".buttons_container">>
+			<<UpdateButtons>>
+			/%<<replace ".verb-stats">>
+				<table>
+					<tr>_obj.Name</tr>
+					<<for _v to 0; _v < _obj.Verbs.length; _v++>>
+						<tr>
+							<td>_obj.Verbs[_v].Name</td>
+							<td>_obj.Verbs[_v].Available</td>
+						</tr>
+					<</for>>
+				</table>
+			<</replace>>%/
+		<</replace>>
+/% TNB %/
+		<<replace ".object_actions">>
+			<<if !$focus.Disabled and Story.has($focus.Acts)>> /% если объект не отключён и у него есть действия — выводим список действий %/
+				<p class="animated fadeInDown">	
+					<<include $focus.Acts>>
+				</p>
+			<</if>>
+		<</replace>>
+		<<replace ".location_actions">>
+			<<if Story.has($_LOC.Acts)>>
+				<p class="animated fadeInDown" style="margin: 0;">	
+					<<include $_LOC.Acts>> /% выводим действия локации%/
+				</p>
+			<</if>>
+		<</replace>>
+		/%<<replace ".inventory">>
+			<<include "Inventory">>
+		<</replace>>%/
+		/%<<unset $quickcommand>>%/
+
+		<<removeclass "*" "faded">>
+		<<removeclass "*" "highlighted">>
+		<<if $_MODE == "CUTSCENE">> /% если в эвенте локации включается катсцена, то трём все действия и инвентарь %/
+			<<replace ".inventory">>
+			<</replace>>
+			<<addclass ".link.obj, .link.prop, .link.actloc, .link.actobj" "faded">> /% гасим все ссылки для катсцены %/
+			<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+		<</if>>
+	<<elseif $_MODE == "CUTSCENE">>
+		<<set $focus = $args[0]>> /% обновляем фокус %/
+		<<append ".report">>
+			<p class="animated fadeInDown">	
+				<<if $_ACTLOG>> /% проверка, включено ли отражение навзания действия в логе (см. Engine—Initialise) %/
+					//> <<= $args[1]>>// /% выводим имя действия %/
+					<br>
+				<<else>>
+					/%<<set $_ACTLOG = true>>%/
+				<</if>>
+				<<= $args[2]>> /% выводим описание действия %/
+			</p>
+		<</append>>
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+		<</script>>
+		<<replace ".object_actions">>
+			<<if !$focus.Disabled and Story.has($focus.Acts)>> /% если объект не отключён и у него есть действия — выводим список действий %/
+				<p class="animated fadeInDown">	
+					<<include $focus.Acts>>
+				</p>
+			<</if>>
+		<</replace>>
+		<<replace ".location_actions">>
+		<</replace>>
+		<<replace ".inventory">>
+		<</replace>>
+		<<addclass ".link.prop, .link.actloc, .link.obj" "faded">> /% гасим все ссылки для катсцены %/
+	<<elseif $_MODE == "talking">>
+		<<append ".report">>
+			/%<<if $args[1] || $args[3]>>%/
+				<p class="animated fadeInDown">	
+					<<if $_ACTLOG>> /% проверка, включено ли отражение навзания действия в логе (см. Engine—Initialise) %/
+						//> <<= $args[1]>>// /% выводим имя действия %/
+						<br>
+					<</if>>
+					<<= $args[2]>> /% выводим описание действия %/
+				</p>
+			/%<</if>>%/
+		<</append>>
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top);
+		<</script>>
+		<<replace ".object_actions">>
+			<p class="animated fadeInDown">	
+				<<if !$CurrentTopic>>
+					<<TopicsList>>
+				<<else>>
+					<<Topic $CurrentTopic $PhrasesList>>
+				<</if>>
+			</p>
+		<</replace>>
+		<<replace ".location_actions">>
+		<</replace>>
+		<<addclass ".link.prop, .link.obj, .link.actloc" "faded">>
+	<<else>>
+		/%<<replace ".focus">><</replace>>%/
+		<<replace ".object_actions">>
+			<p class="animated fadeInDown">	
+				<<InterActCancel $args[0] $args[1]>>
+			</p>
+		<</replace>>
+		<<replace ".location_actions">>
+		<</replace>>
+
+		<<addclass ".link.prop, .link.actloc" "faded">>
+		<<addclass ".link.obj" "highlighted">>
+	<</if>>
+<</widget>>
+
+
+/%
+	             #    ##                              #                      #
+	             #     #                             # #                     #
+	 ###   ##   ###    #     ##    ##   ###    ##    #    ###    ##    ###   ###
+	#  #  #      #     #    #  #  #     #  #  # ##  ###   #  #  # ##  ##     #  #
+	# ##  #      #     #    #  #  #     #     ##     #    #     ##      ##   #  #
+	 # #   ##     ##  ###    ##    ##   #      ##    #    #      ##   ###    #  #
+	
+%/
+/% виджет обновления экрана по локальному действию %/
+/%
+	$args[0] = имя действия
+	$args[1] = описание действия
+%/
+<<widget "actlocrefresh">>
+	/%<<replace ".location_enter">>
+	<</replace>>
+	<<replace ".location_description">>
+		<<include $_LOC.Desc>>
+	<</replace>>%/
+	<<if $_MODE == "NULL">>
+		<<append ".report">>
+			<p class="animated fadeInDown">	
+				<<if $_ACTLOG>> /% проверка, включено ли отражение навзания действия в логе (см. Engine—Initialise) %/
+					//> <<= $args[0]>>// /% выводим имя действия %/
+					<br>
+				<<else>>
+					/%<<set $_ACTLOG = true>>%/
+				<</if>>
+				<<= $args[1]>> /% выводим описание действия %/
+			</p>
+		<</append>>
+		<<append ".report">>
+			<<if tale.get($_LOC.Events).processText().length gt 0>>
+				<p class="animated fadeInDown">	
+					<<include $_LOC.Events>>
+				</p>
+			<</if>>
+		<</append>>
+		/%<<replace ".focus">><</replace>>%/
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+		<</script>>
+		<<replace ".object_actions">><</replace>>
+		<<replace ".location_actions">>
+			<<if Story.has($_LOC.Acts)>>
+				<p class="animated fadeInDown">	
+					<<include $_LOC.Acts>> /% выводим действия локации%/
+				</p>
+			<</if>>
+		<</replace>>
+		<<replace ".inventory">>
+			<<include "Inventory">>
+		<</replace>>
+		<<removeclass "*" "faded">>
+		<<if $_MODE == "CUTSCENE">> /% если в эвенте локации включается катсцена, то трём все действия и инвентарь %/
+			<<replace ".inventory">>
+			<</replace>>
+			<<addclass ".link.obj, .link.prop, .link.actloc, .link.actobj" "faded">> /% гасим все ссылки для катсцены %/
+			<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+		<</if>>
+	<<elseif $_MODE == "CUTSCENE">>
+		<<append ".report">>
+			<p class="animated fadeInDown">	
+				<<if $_ACTLOG>> /% проверка, включено ли отражение навзания действия в логе (см. Engine—Initialise) %/
+					//> <<= $args[0]>>// /% выводим имя действия %/
+					<br>
+				<<else>>
+					/%<<set $_ACTLOG = true>>%/
+				<</if>>
+				<<= $args[1]>> /% выводим описание действия %/
+			</p>
+		<</append>>
+		<<script>>
+			$(window).scrollTop($(".report > p:last-of-type").offset().top); /% скроллимся к последней записи репорта %/
+		<</script>>
+		<<replace ".object_actions">><</replace>>
+		<<replace ".location_actions">>
+			<<if Story.has($_LOC.Acts)>>
+				<p class="animated fadeInDown">	
+					<<include $_LOC.Acts>> /% выводим действия локации%/
+				</p>
+			<</if>>
+		<</replace>>
+		<<replace ".inventory">><</replace>>
+		<<addclass ".link.prop, .link.actloc, .link.obj" "faded">> /% гасим все ссылки для катсцены %/
+		<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+	<</if>>
+	/%<<unset $quickcommand>>%/
+<</widget>>
+
+
+/%
+	                        ##                              #                      #
+	                         #                             # #                     #
+	 ##   #  #   ###  # #    #     ##    ##   ###    ##    #    ###    ##    ###   ###
+	# ##   ##   #  #  ####   #    #  #  #     #  #  # ##  ###   #  #  # ##  ##     #  #
+	##     ##   # ##  #  #   #    #  #  #     #     ##     #    #     ##      ##   #  #
+	 ##   #  #   # #  #  #  ###    ##    ##   #      ##    #    #      ##   ###    #  #
+	
+%/
+/% виджет обновления экрана по осмотру локации %/
+<<widget "examlocrefresh">>
+	<<replace ".location_name">>''<<ExamLoc>>''<</replace>>
+	<<replace ".location_enter">><</replace>>
+	<<replace ".location_description">>
+		<p class="animated fadeInDown">	
+			<<include $_LOC.Desc>>
+		</p>
+	<</replace>>
+	<<replace ".location_content">>
+		<p class="animated fadeInDown">
+			<<LocationContent>>
+		</p>
+	<</replace>>
+	<<replace ".report">>
+		<<if tale.get($_LOC.Events).processText().length gt 0>>
+			<p class="animated fadeInDown">	
+				<<include $_LOC.Events>>
+			</p>
+		<</if>>
+	<</replace>>
+	/%<<replace ".focus">><</replace>>%/
+	<<replace ".object_actions">><</replace>>
+	<<replace ".location_actions">>
+		<<if Story.has($_LOC.Acts)>>
+			<p class="animated fadeInDown">	
+				<<include $_LOC.Acts>> /% выводим действия локации%/
+			</p>
+		<</if>>
+	<</replace>>
+	<<replace ".inventory">>
+		<<include "Inventory">>
+	<</replace>>
+	/%<<unset $quickcommand>>%/
+	<<if $_MODE == "CUTSCENE">>
+		<<addclass ".link.prop, .link.actloc, .link.obj" "faded">> /% гасим все ссылки для катсцены %/
+		<<removeclass "[class*='Cutscene']" "faded">> /% восстанавливаем ссылки «Далее» для катсцены %/
+	<</if>>
+<</widget>>
+
+
+/%
+	                        ##
+	                         #
+	 ###   ##    ###   ###   #     ##    ###
+	#  #  #  #  #  #  #  #   #    # ##  ##
+	 ##   #  #   ##    ##    #    ##      ##
+	#      ##   #     #     ###    ##   ###
+	 ###         ###   ###
+%/
+/% виджет для изменения стиля при надевании гоглов %/
+<<widget "goggles">>
+	<<script>>
+		$(".passage").toggleClass("goggles");
+	<</script>>
+<</widget>>
+
+
+/%
+	#                        #     #                 ##                #                 #
+	#                        #                      #  #               #                 #
+	#      ##    ##    ###  ###   ##     ##   ###   #      ##   ###   ###    ##   ###   ###
+	#     #  #  #     #  #   #     #    #  #  #  #  #     #  #  #  #   #    # ##  #  #   #
+	#     #  #  #     # ##   #     #    #  #  #  #  #  #  #  #  #  #   #    ##    #  #   #
+	####   ##    ##    # #    ##  ###    ##   #  #   ##    ##   #  #    ##   ##   #  #    ##
+	
+%/
+/% виджет для печатания описаний объктов «по месту» (если оно у них есть) %/
+<<widget "LocationContent">>
+	<<for _i to 0; _i < $_LOC.Children.length; _i++>>
+		<<set _t = $_LOC.Children[_i]>>
+		<<set _p = _t+"Place">>
+		<<if Story.has(_p)>>
+			/%<<if _i > 0>>
+				<br><br>
+			<</if>>%/
+			<p>	
+			<<include _p>>
+			</p>
+		<</if>>
+	<</for>>
+<</widget>>
+
+/%
+	.dP"Y8 88  88  dP"Yb  Yb        dP .dP"Y8 888888    db    888888 .dP"Y8
+	`Ybo." 88  88 dP   Yb  Yb  db  dP  `Ybo."   88     dPYb     88   `Ybo."
+	o.`Y8b 888888 Yb   dP   YbdPYbdP   o.`Y8b   88    dP__Yb    88   o.`Y8b
+	8bodP' 88  88  YbodP     YP  YP    8bodP'   88   dP""""Yb   88   8bodP'
+%/
+<<widget "ShowStats">>
+	<<replace ".stats">>
+		<table style="margin:0;text-align: center;">
+			<tr>
+				<td>ID</td>
+				<td>kNotable</td>			
+				<td>kFocus</td>
+				<td>kView</td>
+				<td>kAttract</td>
+			</tr>
+			<<for _i to 0; _i < $_OBJECTS.length; _i++>>
+				<tr>
+					<td>$_OBJECTS[_i].ID</td>
+					<td>
+						$_OBJECTS[_i].kNotable
+						[
+						$_OBJECTS[_i].isNotable
+						]
+					</td>
+					<td><<= Math.trunc($_OBJECTS[_i].kFocus)>></td>
+					<td><<= Math.trunc($_OBJECTS[_i].kView)>></td>
+					<td><<= Math.trunc($_OBJECTS[_i].kAttract)>></td>
+				</tr>
+			<</for>>
+		</table>
+		<div class="verb-stats">
+		</div>
+	<</replace>>
+<</widget>>
+
+/%
+	88   88 88""Yb 8888b.     db    888888 888888 88""Yb 88   88 888888 888888  dP"Yb  88b 88 .dP"Y8
+	88   88 88__dP  8I  Yb   dPYb     88   88__   88__dP 88   88   88     88   dP   Yb 88Yb88 `Ybo."
+	Y8   8P 88"""   8I  dY  dP__Yb    88   88""   88""Yb Y8   8P   88     88   Yb   dP 88 Y88 o.`Y8b
+	`YbodP' 88     8888Y"  dP""""Yb   88   888888 88oodP `YbodP'   88     88    YbodP  88  Y8 8bodP'
+%/
+<<widget "UpdateButtons">>
+		<div class="objs_container">
+			<<for _o to 0; _o < $_SCOPE.length; _o++>>
+				<<set _obj = $_SCOPE[_o]>>
+				<<capture _obj>>
+					<<UCase _obj.Name "_name">>
+					<p @class = "'link obj '+_obj.ID">
+						<<button _name>>
+							<<replace ".acts_container">>
+								
+								<<for _v to 0; _v < _obj.Verbs.length; _v++>>
+									<<if _obj.Verbs[_v].Available > 0>>
+										<<= "<<"+_obj.Verbs[_v].Name+" _obj>>">>
+									<</if>>
+								<</for>>
+							<</replace>>
+							/%<<replace ".verb-stats">>
+								<table>
+									<tr>_obj.Name</tr>
+									<<for _v to 0; _v < _obj.Verbs.length; _v++>>
+										<tr>
+											<td>_obj.Verbs[_v].Name</td>
+											<td>_obj.Verbs[_v].Available</td>
+										</tr>
+									<</for>>
+								</table>
+							<</replace>>%/
+						<</button>>
+					</p>
+				<</capture>>
+				/%<<Look $_SCOPE[_o]>>%/
+			<</for>>
+		</div>
+		<div class="acts_container">
+			<<if $_FOCUSHISTORY.length > 0>>
+				<<set _obj = $_FOCUSHISTORY[0]>>
+				<<if $_SCOPE.includes(_obj)>>
+					<<for _v to 0; _v < _obj.Verbs.length; _v++>>
+						<<if _obj.Verbs[_v].Available > 0>>
+							<<= "<<"+_obj.Verbs[_v].Name+" _obj>>">>
+						<</if>>
+					<</for>>
+				<</if>>
+			<</if>>
+		</div>
+<</widget>>
+
+
+
+
+
+
+
+
+
+
+/%
+	
+	               ,,                     ,,
+	`7MM"""Yb.     db                   `7MM                          .g8"""bgd  .M"""bgd  .M"""bgd
+	  MM    `Yb.                          MM                        .dP'     `M ,MI    "Y ,MI    "Y
+	  MM     `Mb `7MM  ,pP"Ybd `7MMpdMAo. MM   ,6"Yb.`7M'   `MF'    dM'       ` `MMb.     `MMb.
+	  MM      MM   MM  8I   `"   MM   `Wb MM  8)   MM  VA   ,V      MM            `YMMNq.   `YMMNq.
+	  MM     ,MP   MM  `YMMMa.   MM    M8 MM   ,pm9MM   VA ,V       MM.         .     `MM .     `MM
+	  MM    ,dP'   MM  L.   I8   MM   ,AP MM  8M   MM    VVV        `Mb.     ,' Mb     dM Mb     dM
+	.JMMmmmdP'   .JMML.M9mmmP'   MMbmmd'.JMML.`Moo9^Yo.  ,V           `"bmmmd'  P"Ybmmd"  P"Ybmmd"
+	                             MM                     ,V
+	                           .JMML.                OOb"
+%/
+:: DisplayCSS [stylesheet]
+
+/* выключаем синий цвет для ссылок на объекты и декорации
+.link.obj a, .link.prop a, .info a {
+	color: inherit;
+} */
+
+/* для элементов с классом "hidden" выключаем отображение
+.hidden a {
+	display: none;
+} */
+
+:root {
+	--button-min-height: 48px;
+	--button-body-color: #35a;
+	--textbody_maxwidth: 54rem;
+}
+
+.location_name {
+	position: fixed;
+	display: inline-flex;
+	justify-content: center;
+	left: 0;
+	top: 0;
+	padding: 1rem 0;
+	margin: 0;
+	width: 100%;
+	/* возможный css для того, чтобы название локации всегда было видно:
+		text-align: center;
+		position: fixed;
+		width: 40%;
+		left: 0;
+		top: 0;
+		padding: 1em 0;
+		margin: 0 30%;
+		background-color: #111;
+    */
+}
+
+.buttons_container {
+	display: flex;
+	flex-flow: row nowrap;
+	width: 100%;
+	/*justify-content: center;*/
+}
+
+.objs_container, .acts_container {
+	overflow-y: auto;
+	height: 6rem;
+	min-height: calc(3 * var(--button-min-height) + 10px);
+	scroll-snap-type: y mandatory;			/* chrome */
+	scroll-padding: 1rem;					/* chrome */
+	scroll-snap-type-y: mandatory;			/* firefox */
+	scroll-snap-destination: 50% 50%;		/* firefox */
+	scrollbar-width: none;					/* firefox */
+	scrollbar-width: thin;					/* firefox */
+	scrollbar-color: #eee transparent;		/* firefox */
+	overscroll-behavior: contain;
+	display: flex;
+	flex-flow: column nowrap;
+	/*justify-content: flex-start;*/
+	align-items: center;
+	flex-grow: 1;
+	max-width: calc(var(--textbody_maxwidth)*.3);
+}
+
+/*.objs_container {
+	flex-grow: 1;
+}
+
+.acts_container {
+	flex-grow: 2;
+}*/
+
+p[class~="link"]:not(:last-child) {
+	margin-bottom: 5px;
+}
+
+.buttons_container .obj, .buttons_container .act, .buttons_container .actloc {
+	scroll-snap-align: center;				/* chrome */
+	scroll-snap-coordinate: 50% 50%;		/* firefox */
+	margin: 0;
+	width: 100%;
+}
+
+.buttons_container button{
+	min-height: var(--button-min-height);
+	padding: 0;
+	width: 100%;
+}
+
+.buttons_container ::-webkit-scrollbar {			/* chrome */
+    /*display: none;*/
+    width: 5px;
+}
+.buttons_container ::-webkit-scrollbar-button {		/* chrome */
+    display: none;
+}
+.buttons_container ::-webkit-scrollbar-thumb {		/* chrome */
+    background-color: #eee;
+}
+/*.buttons_container ::-webkit-scrollbar-track {
+    background-color: var(--button-body-color);
+}*/
+
+a {
+	cursor: pointer;
+    color: inherit;
+    text-decoration: none;
+}
+
+
+
+:: ENDOFDISPLAYFILE
