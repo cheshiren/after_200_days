@@ -9,17 +9,6 @@
 	<<link "vars">><<checkvars>><</link>>
 	<<link "stats">><<ShowStats>><</link>>
 
-/%:: StoryIncludes
-
-../../../Platforms/CheT/Engine.twee
-../../../Platforms/CheT/Verbs.twee
-../../../Platforms/CheT/Scripts.twee
-DisplayTNB.tw%/
-
-/%:: StoryInitRuby [twee2]
-Twee2::build_config.story_ifid = '06d3fe11-edea-458d-85ff-70235a82d191'
-Twee2::build_config.story_format = 'SugarCube2'%/
-
 :: StorySettings
 ifid:06d3fe11-edea-458d-85ff-70235a82d191
 
