@@ -138,7 +138,6 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $phone.NameP = "телефоне">>
 	<<set $phone.Parent = "player">>
 	<<set $phone.isNotable = [0,2,0,0]>>
-	/%<<set $phone.isTakeable = true>>%/
 	<<set $phone.Drop.Link = "Убрать телефон">>
 :: phoneDesc [nobr]
 	<<if !$phone.LookedAtScreen>>
