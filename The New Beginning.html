@@ -339,8 +339,12 @@ a {
 	Прошло уже три часа с тех пор, как я съехал с кольцевой, но за то время проехал только половину пути до КПП на выезде из города.&lt;br&gt;
 	«Извините, в данный момент сеть перегружена…» Сбросил, снова набрал.&lt;br&gt;
 	&lt;&lt;CurrentViewAdd $downpour&gt;&gt;</tw-passagedata><tw-passagedata pid="30" name="InTheCarDesc" tags="nobr" position="1225,350">Я стоял в самой левой из шести полос, ближе всех к бетонному заграждению, и наблюдал за &lt;&lt;obj &quot;полицейским&quot; $cop&gt;&gt; в дождевике, который, мелькая фонариком, обходил машины в заторе. Подходил к каждой водительской двери, просил показать документы, светил в салон.&lt;br&gt;
-	С другой стороны ограждения медленно приближался военный &lt;&lt;obj &quot;внедорожник&quot; $jeep&gt;&gt;, сопровождавший &lt;&lt;obj &quot;полицейского&quot; $cop&gt;&gt;.&lt;br&gt;
-	Часы на &lt;&lt;obj &quot;передней панели&quot; $dashboard&gt;&gt; показывали без четверти полночь.</tw-passagedata><tw-passagedata pid="31" name="InTheCarEvents" tags="nobr" position="100,475">&lt;p&gt;&lt;&lt;include $phone.Daemon&gt;&gt;&lt;/p&gt;
+	С другой стороны ограждения медленно приближался военный &lt;&lt;obj &quot;внедорожник&quot; $jeep&gt;&gt;, сопровождавший &lt;&lt;obj &quot;полицейского&quot; $cop&gt;&gt;.
+	&lt;&lt;if $InTheCarTime == &quot;23:45&quot;&gt;&gt;
+		&lt;br&gt;Часы на &lt;&lt;obj &quot;передней панели&quot; $dashboard&gt;&gt; показывали без четверти полночь.
+	&lt;&lt;elseif $InTheCarTime == &quot;00:00&quot;&gt;&gt;
+		&lt;br&gt;Часы на &lt;&lt;obj &quot;передней панели&quot; $dashboard&gt;&gt; показывали полночь.
+	&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="31" name="InTheCarEvents" tags="nobr" position="100,475">&lt;p&gt;&lt;&lt;include $phone.Daemon&gt;&gt;&lt;/p&gt;
 	&lt;&lt;if $cigarette.Parent == &quot;player&quot;&gt;&gt;
 		&lt;p&gt;&lt;&lt;include $cigarette.Daemon&gt;&gt;&lt;/p&gt;
 	&lt;&lt;/if&gt;&gt;
