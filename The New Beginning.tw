@@ -158,7 +158,7 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	Тишина. Я ждал и ждал гудков, которые всё не появлялись.
 :: phoneDaemon [nobr]
 	<<if $InTheCar.Timer % 10 == 9>>
-		В этот момент из телефона опять донеслось: «Извините, в данный момент сеть перегружена…» Я сбросил вызов и в очередной раз набрал номер жены.
+		В этот момент из <<obj "телефона" $phone>> опять донеслось: «Извините, в данный момент сеть перегружена…» Я сбросил вызов и в очередной раз набрал номер жены.
 	<</if>>
 
 :: ring [obj]
@@ -206,6 +206,8 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 		<p><<include $cigarette.Daemon>></p>
 	<</if>>
 	<p><<include $radio.Daemon>></p>
+	<p><<include $cop.Daemon>></p>
+
 
 :: downpour [obj]
 	<<set $downpour.Name = "дождь">>
@@ -298,6 +300,11 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $cop.Parent = "windshield">>
 	<<set $cop.isNotable = [1,0,0,0]>>
 :: copDesc [nobr]
+:: copDaemon [nobr]
+	<<if $InTheCar.Timer == 40>>
+		<<moveobj $cop $sideglass>>
+		<<moveobj $jeep $sideglass>>
+	<</if>>
 
 :: jeep [obj]
 	<<set $jeep.Name = "внедорожник">>
@@ -320,6 +327,7 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $sideglass.Parent = "InTheCar">>
 	<<set $sideglass.isOpenable = true>>
 	<<set $sideglass.isOpen = false>>
+	<<set $sideglass.isSightPenetrable = true>>
 :: sideglassDesc [nobr]
 	<<if $sideglass.isOpen>>
 		Я посмотрел в приоткрытое окно водительской двери. В жёлтом свете дорожных фонарей ливень хлестал асфальт и бетонное заграждение, дальше, за пределами конусов света, была лишь непроглядная тьма. В боковом зеркале отражались фары другой машины.
@@ -402,17 +410,18 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $drwheel.NameP = "руле">>
 	<<set $drwheel.Parent = "dashboard">>
 	<<set $drwheel.isTuneable = true>>
+	<<set $drwheel.Tune.Link = "Посигналить">>
 :: drwheelDesc [nobr]
 	Ничем не примечательный руль из мягкого пластика. Посреди клаксона наклеена незнакомая эмблема — стилизованная «K» в круге.
-:: drwheelTuneAddAct [nobr]
-	<<set $drwheel.Tuned = true>>
 :: drwheelTune [nobr]
 	<<if !$drwheel.Tuned>>
-		Я, поддавшись внезапному порыву, обеими руками надавил на клаксон и резкий неприятный звук разнёсся над пробкой.<br>
-		Сосед справа раздражённо хмурился в мою сторону.
+		Я, поддавшись внезапному порыву, обеими руками надавил на клаксон и резкий звук разнёсся над пробкой. Кто-то подхватил и вскоре какафония автомобильных гудков, как лесной пожар, пронеслась по затору.<br>
+		У соседей справа завыла и долго не успокаивалась собака. Я поймал раздражённый взгляд их водителя и отвернулся.
 	<<else>>
-
+		Одного раза было достаточно. Люди на взводе, не стоило их провоцировать.
 	<</if>>
+:: drwheelTuneAfterAct [nobr]
+	<<set $drwheel.Tuned = true>>
 
 :: radio [obj]
 	<<set $radio.Name = "радио">>
@@ -463,7 +472,7 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 		<<if $radio.justInteracted>>
 			<<set $radio.justInteracted = false>>
 		<<else>>
-			Из динамиков шла радиопередача: //«<<= $radio.Transmission[$radio.Timer]>>».//
+			Из <<obj "динамиков" $radio>> шла радиопередача: //«<<= $radio.Transmission[$radio.Timer]>>».//
 		<</if>>
 	<</if>>
 
