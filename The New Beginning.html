@@ -248,17 +248,17 @@ a {
 
 
 /%
-			коп			джип		телефон
-Ходы
+Ходы		коп			джип		телефон
+
 0			0			0			0
-5			·			·			·
-10			1			·			1
-15			·			·			·
-20			2			1			2
-25			·			·			·
-30			3			·			3
-35			·			·			·
-40			4			2			4
+5			1			·			·
+10			·			·			1
+15			2			1			·
+20			·			·			2
+25			3			·			·
+30			·			·			3
+35			4			2			·
+40			·			·			4
 
 
 
@@ -356,7 +356,7 @@ a {
 	&lt;&lt;set $downpour.NameI = &quot;дождём&quot;&gt;&gt;
 	&lt;&lt;set $downpour.NameP = &quot;дожде&quot;&gt;&gt;
 	&lt;&lt;set $downpour.Parent = &quot;InTheCar&quot;&gt;&gt;
-	&lt;&lt;set $downpour.isNotable = [0,1,0,0]&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="downpourDesc" tags="nobr" position="350,475">Дождь лил уже вторые сутки и, кажется, не думал прекращаться. Холодные, тяжёлые струи хлестали всё, до чего могли дотянуться, заставляли трепетать свет уличных фонарей и автомобильных огней.</tw-passagedata><tw-passagedata pid="34" name="downpourListen" tags="nobr" position="475,475">&lt;&lt;if !$sideglass.isOpen&gt;&gt;
+	&lt;&lt;set $downpour.isNotable = [0,1,0,0]&gt;&gt;</tw-passagedata><tw-passagedata pid="33" name="downpourDesc" tags="nobr" position="350,475">Дождь лил уже вторые сутки и, кажется, не думал прекращаться. Холодные, тяжёлые струи хлестали всё, до чего могли дотянуться, заставляли трепетать свет уличных фонарей и автомобильные огни.</tw-passagedata><tw-passagedata pid="34" name="downpourListen" tags="nobr" position="475,475">&lt;&lt;if !$sideglass.isOpen&gt;&gt;
 		Дождь всё стучал по крыше и стёклам машины. Его частое тап-тап-тап почти сливалось в глухой белый шум.
 	&lt;&lt;else&gt;&gt;
 		В открытое боковое &lt;&lt;obj &quot;окно&quot; $sideglass&gt;&gt; врывался громкий белый шум дождя.
@@ -407,7 +407,14 @@ a {
 	&lt;&lt;set $cop.NameI = &quot;полицейским&quot;&gt;&gt;
 	&lt;&lt;set $cop.NameP = &quot;полицейском&quot;&gt;&gt;
 	&lt;&lt;set $cop.Parent = &quot;windshield&quot;&gt;&gt;
-	&lt;&lt;set $cop.isNotable = [1,0,0,0]&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="copDesc" tags="nobr" position="725,600"></tw-passagedata><tw-passagedata pid="47" name="copDaemon" tags="nobr" position="850,600">&lt;&lt;if $InTheCar.Timer == 40&gt;&gt;
+	&lt;&lt;set $cop.isNotable = [1,0,0,0]&gt;&gt;
+	&lt;&lt;set $cop.Timeline = [0,15,35]&gt;&gt;</tw-passagedata><tw-passagedata pid="46" name="copDesc" tags="nobr" position="725,600">&lt;&lt;if $InTheCar.Timer &lt;= $cop.Timeline[1]&gt;&gt;
+
+	&lt;&lt;elseif $InTheCar.Timer &lt;= $cop.Timeline[2]&gt;&gt;
+
+	&lt;&lt;elseif $InTheCar.Timer &gt; $cop.Timeline[2]&gt;&gt;
+
+	&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="47" name="copDaemon" tags="nobr" position="850,600">&lt;&lt;if $InTheCar.Timer == $cop.Timeline[2]&gt;&gt;
 		&lt;&lt;moveobj $cop $sideglass&gt;&gt;
 		&lt;&lt;moveobj $jeep $sideglass&gt;&gt;
 	&lt;&lt;/if&gt;&gt;</tw-passagedata><tw-passagedata pid="48" name="jeep" tags="obj" position="975,600">&lt;&lt;set $jeep.Name = &quot;внедорожник&quot;&gt;&gt;
@@ -416,7 +423,8 @@ a {
 	&lt;&lt;set $jeep.NameA = &quot;внедорожник&quot;&gt;&gt;
 	&lt;&lt;set $jeep.NameI = &quot;внедорожником&quot;&gt;&gt;
 	&lt;&lt;set $jeep.NameP = &quot;внедорожнике&quot;&gt;&gt;
-	&lt;&lt;set $jeep.Parent = &quot;windshield&quot;&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="jeepDesc" tags="nobr" position="1100,600"></tw-passagedata><tw-passagedata pid="50" name="sideglass" tags="obj" position="1225,600">&lt;&lt;set $sideglass.Name = &quot;боковое окно&quot;&gt;&gt;
+	&lt;&lt;set $jeep.Parent = &quot;windshield&quot;&gt;&gt;
+	&lt;&lt;set $cop.Timeline = [0,15,35]&gt;&gt;</tw-passagedata><tw-passagedata pid="49" name="jeepDesc" tags="nobr" position="1100,600"></tw-passagedata><tw-passagedata pid="50" name="sideglass" tags="obj" position="1225,600">&lt;&lt;set $sideglass.Name = &quot;боковое окно&quot;&gt;&gt;
 	&lt;&lt;set $sideglass.NameG = &quot;бокового окна&quot;&gt;&gt;
 	&lt;&lt;set $sideglass.NameD = &quot;боковому окну&quot;&gt;&gt;
 	&lt;&lt;set $sideglass.NameA = &quot;боковое окно&quot;&gt;&gt;

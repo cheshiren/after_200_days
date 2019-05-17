@@ -49,17 +49,17 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 
 
 /%
-			коп			джип		телефон
-Ходы
+Ходы		коп			джип		телефон
+
 0			0			0			0
-5			·			·			·
-10			1			·			1
-15			·			·			·
-20			2			1			2
-25			·			·			·
-30			3			·			3
-35			·			·			·
-40			4			2			4
+5			1			·			·
+10			·			·			1
+15			2			1			·
+20			·			·			2
+25			3			·			·
+30			·			·			3
+35			4			2			·
+40			·			·			4
 
 
 
@@ -219,7 +219,7 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $downpour.Parent = "InTheCar">>
 	<<set $downpour.isNotable = [0,1,0,0]>>
 :: downpourDesc [nobr]
-	Дождь лил уже вторые сутки и, кажется, не думал прекращаться. Холодные, тяжёлые струи хлестали всё, до чего могли дотянуться, заставляли трепетать свет уличных фонарей и автомобильных огней.
+	Дождь лил уже вторые сутки и, кажется, не думал прекращаться. Холодные, тяжёлые струи хлестали всё, до чего могли дотянуться, заставляли трепетать свет уличных фонарей и автомобильные огни.
 :: downpourListen [nobr]
 	<<if !$sideglass.isOpen>>
 		Дождь всё стучал по крыше и стёклам машины. Его частое тап-тап-тап почти сливалось в глухой белый шум.
@@ -299,9 +299,17 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $cop.NameP = "полицейском">>
 	<<set $cop.Parent = "windshield">>
 	<<set $cop.isNotable = [1,0,0,0]>>
+	<<set $cop.Timeline = [0,15,35]>>
 :: copDesc [nobr]
+	<<if $InTheCar.Timer <= $cop.Timeline[1]>>
+
+	<<elseif $InTheCar.Timer <= $cop.Timeline[2]>>
+
+	<<elseif $InTheCar.Timer > $cop.Timeline[2]>>
+
+	<</if>>
 :: copDaemon [nobr]
-	<<if $InTheCar.Timer == 40>>
+	<<if $InTheCar.Timer == $cop.Timeline[2]>>
 		<<moveobj $cop $sideglass>>
 		<<moveobj $jeep $sideglass>>
 	<</if>>
@@ -314,6 +322,7 @@ ifid:06d3fe11-edea-458d-85ff-70235a82d191
 	<<set $jeep.NameI = "внедорожником">>
 	<<set $jeep.NameP = "внедорожнике">>
 	<<set $jeep.Parent = "windshield">>
+	<<set $cop.Timeline = [0,15,35]>>
 :: jeepDesc [nobr]
 
 :: sideglass [obj]
