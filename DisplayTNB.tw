@@ -74,6 +74,7 @@
 		<<DarkTheme>>
 	<</if>>
 	/%<p class="link obj prop actloc actobj Cutscene"></p> /% фиктивный элемент для отлова ошибок %/
+	<p id="count" style="position:fixed;top:0;right:50px;"></p>
 
 
 /%
